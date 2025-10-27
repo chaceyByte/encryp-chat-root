@@ -1,0 +1,27 @@
+# WebSocket 服务器 Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 复制 package.json 和安装依赖
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+COPY server/ ./server/
+
+# 安装依赖
+RUN npm install -g pnpm
+RUN pnpm install --prod
+
+# 复制 TypeScript 配置文件
+COPY tsconfig.json ./
+COPY tsconfig.node.json ./
+
+# 暴露端口
+EXPOSE 8082
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost:8082 || exit 1
+
+# 启动服务器（使用 tsx 运行 TypeScript 文件）
+CMD ["npx", "tsx", "server/server.ts"]

@@ -1,0 +1,28 @@
+# 前端静态文件服务器 Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 复制 package.json 和安装依赖
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+
+# 安装依赖
+RUN npm install -g pnpm
+RUN pnpm install --prod
+
+# 安装静态文件服务器
+RUN npm install -g serve
+
+# 复制构建好的前端文件
+COPY dist/ ./dist/
+
+# 暴露端口
+EXPOSE 3000
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost:3000 || exit 1
+
+# 启动静态文件服务器
+CMD ["serve", "-s", "dist", "-l", "3000"]
