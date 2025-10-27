@@ -1,0 +1,44 @@
+# ── 依赖 & 构建产物 ──
+node_modules/
+dist/
+dist-ssr/
+*.tgz
+*.tar.gz
+
+# ── 本地环境 ──
+.env
+.env.*        # 拒绝任何 .env 文件（含 .env.local/.env.production 等）
+!.env.example  # 仅保留示例模板
+
+# ── 日志 ──
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ── 编辑器 ──
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ── 系统 ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── 覆盖率 & 缓存 ──
+coverage/
+.nyc_output/
+*.tsbuildinfo
+.vite/
+.parcel-cache/
+.next/
+
+# ── Lock 文件（可选，团队统一即可） ──
+# package-lock.json     # 若用 npm 可保留
+# yarn.lock             # 若用 yarn 可保留
+# pnpm-lock.yaml        # 若用 pnpm 可保留
