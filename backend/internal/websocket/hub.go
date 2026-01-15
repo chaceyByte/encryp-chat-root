@@ -1,15 +1,13 @@
 package websocket
 
 import (
-	"log"
-	"time"
-
 	"chat-server/internal/message"
 	"chat-server/internal/room"
 	"chat-server/internal/user"
 	"chat-server/pkg/types"
-
 	"github.com/gorilla/websocket"
+	"log"
+	"time"
 )
 
 // Hub 维护活跃的连接并广播消息
