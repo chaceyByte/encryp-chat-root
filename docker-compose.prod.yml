@@ -1,42 +1,57 @@
 version: '3.8'
 
 services:
-  # WebSocket 聊天服务器
   chat-server:
     build:
-      context: .
-      dockerfile: Dockerfile.server
-    ports:
-      - "8082:8082"
+      context: ./backend
+      dockerfile: Dockerfile
     environment:
       - NODE_ENV=production
       - PORT=8082
-    restart: unless-stopped
+    restart: always
+    networks:
+      - chat-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 5s
 
-  # 前端静态文件服务器
   chat-frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
-    ports:
-      - "3000:3000"
+      context: ./frontend
+      dockerfile: ../Dockerfile.frontend
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - VITE_WS_HOST=localhost  # 前端通过localhost访问WebSocket服务器
-      - VITE_WS_PORT=8082
+    restart: always
+    networks:
+      - chat-network
     depends_on:
       - chat-server
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    restart: always
+    networks:
+      - chat-network
+    depends_on:
+      - chat-frontend
+      - chat-server
+
+networks:
+  chat-network:
+    driver: bridge

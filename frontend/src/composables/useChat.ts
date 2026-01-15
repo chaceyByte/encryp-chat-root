@@ -54,8 +54,10 @@ export function useChat(username: string, roomKey: string) {
     // 使用当前页面的hostname和端口8082
     // 在Docker环境中，前端和服务器都在同一台宿主机上
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const wsUrl = `${protocol}//${window.location.hostname}:8082`
-    
+    const wsUrl = `${protocol}//${window.location.hostname}:8082/ws`
+
+    console.log('正在连接 WebSocket:', wsUrl)
+
     try {
       ws.value = new WebSocket(wsUrl)
       
